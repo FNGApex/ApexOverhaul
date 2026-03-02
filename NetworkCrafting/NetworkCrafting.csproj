@@ -7,6 +7,8 @@
     <RootNamespace>NetworkCrafting</RootNamespace>
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <!-- C# 9: enables 'is not' patterns; capped to avoid ReadOnlySpan codegen on net48 -->
+    <LangVersion>9.0</LangVersion>
 
     <!-- Default to Release; override with: dotnet build -c Debug -->
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
@@ -41,6 +43,13 @@
     <ManagedDir>$(GameDir)\7DaysToDie_Data\Managed</ManagedDir>
     <HarmonyDir>$(ManagedDir)</HarmonyDir>
   </PropertyGroup>
+
+  <!-- Provides correct .NET Framework 4.8 reference assemblies when building with a modern .NET SDK -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+    <!-- Backports Span<T>/ReadOnlySpan<T> to net48 (needed because game DLLs expose these types) -->
+    <PackageReference Include="System.Memory" Version="4.5.5" PrivateAssets="All" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">

@@ -1,11 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "w6HzoV5xIgA=",
+  "dgSpecHash": "UJ3LuPJC9Pg=",
   "success": true,
   "projectFilePath": "/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/NetworkCrafting.csproj",
   "expectedPackageFiles": [
     "/Users/bear/.nuget/packages/microsoft.netframework.referenceassemblies/1.0.3/microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
-    "/Users/bear/.nuget/packages/microsoft.netframework.referenceassemblies.net48/1.0.3/microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512"
+    "/Users/bear/.nuget/packages/microsoft.netframework.referenceassemblies.net48/1.0.3/microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512",
+    "/Users/bear/.nuget/packages/system.buffers/4.5.1/system.buffers.4.5.1.nupkg.sha512",
+    "/Users/bear/.nuget/packages/system.memory/4.5.5/system.memory.4.5.5.nupkg.sha512",
+    "/Users/bear/.nuget/packages/system.numerics.vectors/4.5.0/system.numerics.vectors.4.5.0.nupkg.sha512",
+    "/Users/bear/.nuget/packages/system.runtime.compilerservices.unsafe/4.5.3/system.runtime.compilerservices.unsafe.4.5.3.nupkg.sha512"
   ],
   "logs": []
 }

@@ -227,8 +227,8 @@ public class ContainerNetworkManager
             PersistentPlayerData data = kvp.Value;
             if (data == null) continue;
 
-            bool canEdit = data.PrimaryId.Equals(player.PlatformId) ||
-                           (data.ACL != null && data.ACL.Contains(player.PlatformId));
+            bool canEdit = data.PrimaryId.Equals(Platform.PlatformManager.InternalLocalUserIdentifier) ||
+                           (data.ACL != null && data.ACL.Contains(Platform.PlatformManager.InternalLocalUserIdentifier));
             if (!canEdit) continue;
 
             lcbPos = claimPos;

@@ -4,3 +4,7 @@
 /Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Release/NetworkCrafting.AssemblyInfo.cs
 /Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Release/NetworkCrafting.csproj.CoreCompileInputs.cache
 /Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Release/NetworkCrafting.sourcelink.json
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/Harmony/NetworkCrafting.dll
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/Harmony/NetworkCrafting.pdb
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Release/NetworkCrafting.dll
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Release/NetworkCrafting.pdb

@@ -48,8 +48,12 @@
             "Microsoft.NETFramework.ReferenceAssemblies": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[1.0.3, )",
-              "autoReferenced": true
+              "version": "[1.0.3, )"
+            },
+            "System.Memory": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[4.5.5, )"
             }
           },
           "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet/10.0.103/libexec/sdk/10.0.103/RuntimeIdentifierGraph.json"

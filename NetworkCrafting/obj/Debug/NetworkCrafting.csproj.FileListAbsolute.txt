@@ -1,0 +1,10 @@
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Debug/NetworkCrafting.csproj.AssemblyReference.cache
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Debug/NetworkCrafting.GeneratedMSBuildEditorConfig.editorconfig
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Debug/NetworkCrafting.AssemblyInfoInputs.cache
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Debug/NetworkCrafting.AssemblyInfo.cs
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Debug/NetworkCrafting.csproj.CoreCompileInputs.cache
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Debug/NetworkCrafting.sourcelink.json
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/Harmony/NetworkCrafting.dll
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/Harmony/NetworkCrafting.pdb
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Debug/NetworkCrafting.dll
+/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Debug/NetworkCrafting.pdb

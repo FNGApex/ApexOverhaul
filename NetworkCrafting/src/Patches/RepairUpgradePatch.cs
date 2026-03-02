@@ -1,88 +1,93 @@
 using HarmonyLib;
+using System.Collections.Generic;
 
 /// <summary>
-/// Repair: allow network inventory to provide materials.
-/// Upgrade: explicitly skip the network — player inventory only.
+/// Repair: allow network containers to supply missing materials.
+/// Upgrade: explicitly excluded — the isUpgradeItem guard on every patch
+///          ensures the network is never consulted for block upgrades.
+///
+/// Patched methods (all on ItemActionRepair):
+///   Item repair  → canRemoveRequiredItem / removeRequiredItem
+///   Block repair → CanRemoveRequiredResource  (optimistic check)
+///
+/// Note on CanRemoveRequiredResource:
+///   The check is optimistic — it returns true when the network has any items.
+///   The actual deficit is consumed by removeRequiredItem (called internally
+///   by RemoveRequiredResource). Free-repair is possible only if the network
+///   does not actually contain the required block resources; this edge case
+///   is acceptable for v1 and can be tightened with a Transpiler later.
 /// </summary>
 
-// -----------------------------------------------------------------------
-// Block REPAIR — allow network
-// -----------------------------------------------------------------------
-[HarmonyPatch(typeof(ItemActionRepair), "ExecuteAction")]
-public static class Patch_ItemActionRepair_ExecuteAction
-{
-    // We run after the original so standard repair logic fires first.
-    // If the repair failed due to missing materials, attempt to satisfy
-    // from the network and retry.
-    [HarmonyPostfix]
-    public static void Postfix(ItemActionRepair __instance,
-                               ItemActionData _actionData,
-                               bool _bReleased)
-    {
-        // Repair already succeeded — nothing to do.
-        // If it failed the game shows a warning; we can't easily intercept
-        // the exact failure here without a transpiler, so the real hook is
-        // in the material-check below.
-    }
-}
+// ── canRemoveRequiredItem: allow if network covers the shortfall ───────────────
 
-[HarmonyPatch(typeof(ItemActionRepair), "CanExecuteAction")]
-public static class Patch_ItemActionRepair_CanExecute
+[HarmonyPatch(typeof(ItemActionRepair), "canRemoveRequiredItem")]
+public static class Patch_ItemActionRepair_canRemoveRequiredItem
 {
     [HarmonyPostfix]
     public static void Postfix(ItemActionRepair __instance,
-                               ItemActionData _actionData,
+                               ItemInventoryData _data, ItemStack _itemStack,
                                ref bool __result)
     {
-        if (__result) return; // already allowed
+        if (__result || __instance.isUpgradeItem) return;
 
-        EntityPlayerLocal player = _actionData?.invData?.holdingPlayer as EntityPlayerLocal;
+        EntityPlayer player = _data.holdingEntity as EntityPlayer;
         if (player == null) return;
         if (!ContainerNetworkManager.Instance.IsPlayerInOwnedLCB(player)) return;
         if (ContainerNetworkManager.Instance.IsBloodMoonActive()) return;
 
-        // Check if network inventory would cover the missing materials
-        // (exact materials depend on the item; we conservatively allow the
-        //  action and let ConsumeFromNetwork handle satisfaction)
-        __result = true;
+        var netCounts = Patch_XUiM_PlayerInventory_HasItems.BuildNetworkCounts(player);
+        if (netCounts == null) return;
+
+        netCounts.TryGetValue(_itemStack.itemValue.type, out int inNet);
+        if (inNet >= _itemStack.count)
+            __result = true;
     }
 }
 
-// -----------------------------------------------------------------------
-// Block UPGRADE — explicitly skip network (return false if only network
-// inventory would satisfy the requirement)
-// -----------------------------------------------------------------------
-[HarmonyPatch(typeof(ItemActionUpgradeBlock), "CanExecuteAction")]
-public static class Patch_ItemActionUpgradeBlock_CanExecute
+// ── removeRequiredItem: consume from network when player is short ──────────────
+
+[HarmonyPatch(typeof(ItemActionRepair), "removeRequiredItem")]
+public static class Patch_ItemActionRepair_removeRequiredItem
 {
-    // We want to ensure that only the player's own inventory is considered.
-    // The original already checks player inventory; we add a guard so that
-    // even if some other mod or code path tried to pull from network for
-    // upgrade, we explicitly return false if player inventory alone cannot
-    // satisfy it.
-    [HarmonyPrefix]
-    public static bool Prefix(ItemActionUpgradeBlock __instance,
-                              ItemActionData _actionData,
-                              ref bool __result)
-    {
-        // Let the original run; it only ever checks player inventory.
-        // No network access needed — this prefix is intentionally a no-op
-        // pass-through to make the design intent explicit.
-        return true;
-    }
-}
-
-// Prevent ConsumeFromNetwork from being called inside upgrade execution
-[HarmonyPatch(typeof(ItemActionUpgradeBlock), "ExecuteAction")]
-public static class Patch_ItemActionUpgradeBlock_Execute
-{
-    // Tag the thread so CraftingNetworkPatch knows not to pull from network
-    [ThreadStatic]
-    public static bool IsUpgrading;
-
-    [HarmonyPrefix]
-    public static void Prefix() => IsUpgrading = true;
-
     [HarmonyPostfix]
-    public static void Postfix() => IsUpgrading = false;
+    public static void Postfix(ItemActionRepair __instance,
+                               ItemInventoryData _data, ItemStack _itemStack,
+                               ref bool __result)
+    {
+        if (__result || __instance.isUpgradeItem) return;
+
+        EntityPlayer player = _data.holdingEntity as EntityPlayer;
+        if (player == null) return;
+        if (!ContainerNetworkManager.Instance.IsPlayerInOwnedLCB(player)) return;
+        if (ContainerNetworkManager.Instance.IsBloodMoonActive()) return;
+
+        // Original failed to remove from player — try the full amount from network.
+        var needed = new[] { new ItemStack(_itemStack.itemValue.Clone(), _itemStack.count) };
+        if (ContainerNetworkManager.Instance.ConsumeFromNetwork(player, needed))
+            __result = true;
+    }
+}
+
+// ── CanRemoveRequiredResource: optimistic pass for block repair ───────────────
+
+[HarmonyPatch(typeof(ItemActionRepair), "CanRemoveRequiredResource")]
+public static class Patch_ItemActionRepair_CanRemoveRequiredResource
+{
+    [HarmonyPostfix]
+    public static void Postfix(ItemActionRepair __instance,
+                               ItemInventoryData data, BlockValue blockValue,
+                               ref bool __result)
+    {
+        if (__result || __instance.isUpgradeItem) return;
+
+        EntityPlayer player = data.holdingEntity as EntityPlayer;
+        if (player == null) return;
+        if (!ContainerNetworkManager.Instance.IsPlayerInOwnedLCB(player)) return;
+        if (ContainerNetworkManager.Instance.IsBloodMoonActive()) return;
+
+        // Allow if network has any items — removeRequiredItem postfix consumes the deficit.
+        var netCounts = Patch_XUiM_PlayerInventory_HasItems.BuildNetworkCounts(player);
+        if (netCounts != null && netCounts.Count > 0)
+            __result = true;
+    }
 }

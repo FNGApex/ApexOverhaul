@@ -27,7 +27,7 @@ public static class Patch_TileEntityLootContainer_Read
 {
     // Postfix: after the game reads its own data, read our extra byte
     [HarmonyPostfix]
-    public static void Postfix(TileEntityLootContainer __instance, PooledBinaryReader _br)
+    public static void Postfix(TileEntityLootContainer __instance, System.IO.BinaryReader _br)
     {
         try
         {
@@ -57,7 +57,7 @@ public static class Patch_TileEntityLootContainer_Read
 public static class Patch_TileEntityLootContainer_Write
 {
     [HarmonyPostfix]
-    public static void Postfix(TileEntityLootContainer __instance, PooledBinaryWriter _bw)
+    public static void Postfix(TileEntityLootContainer __instance, System.IO.BinaryWriter _bw)
     {
         _bw.Write(ContainerBroadcastHelper.IsBroadcasting(__instance));
     }

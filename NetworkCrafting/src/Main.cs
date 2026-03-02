@@ -14,12 +14,12 @@ public class NetworkCraftingMod : IModApi
         ModEvents.GameShutdown.RegisterHandler(OnGameShutdown);
     }
 
-    private static void OnGameStartDone()
+    private static void OnGameStartDone(ref ModEvents.SGameStartDoneData _data)
     {
         ContainerNetworkManager.Instance.OnGameStarted();
     }
 
-    private static void OnGameShutdown()
+    private static void OnGameShutdown(ref ModEvents.SGameShutdownData _data)
     {
         ContainerNetworkManager.Instance.OnGameShutdown();
     }

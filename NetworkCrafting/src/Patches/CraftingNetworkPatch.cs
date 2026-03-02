@@ -1,124 +1,136 @@
 using HarmonyLib;
+using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 /// <summary>
-/// Merges network container inventory into the crafting resource pool so that
-/// all crafting grids and workstations can see (and consume) network items.
+/// Hooks XUiM_PlayerInventory so all crafting material checks and consumption
+/// include items from the player's broadcasting network containers.
+///
+/// Strategy:
+///   • Postfix HasItems — if player alone is short, check player + network combined.
+///   • Prefix RemoveItems — record what network must cover (the player deficit).
+///   • Postfix RemoveItems — consume that recorded deficit from network containers.
 /// </summary>
 
-// -----------------------------------------------------------------------
-// HasRequiredMaterials — allow crafting when network covers the gap
-// -----------------------------------------------------------------------
-[HarmonyPatch(typeof(RecipeCraftingUtils), "HasRequiredMaterials")]
-public static class Patch_RecipeCraftingUtils_HasRequiredMaterials
-{
-    [HarmonyPrefix]
-    public static bool Prefix(EntityPlayer _player, Recipe _recipe, int _count, ref bool __result)
-    {
-        if (_player == null || _recipe == null) return true; // run original
+// ── HasItems: pass when player + network together cover every requirement ─────
 
-        // If original already passes, no need to intervene
-        if (RecipeCraftingUtils.HasRequiredMaterialsOriginal(_player, _recipe, _count))
+[HarmonyPatch(typeof(XUiM_PlayerInventory), "HasItems")]
+public static class Patch_XUiM_PlayerInventory_HasItems
+{
+    // Guard: HasItems is called inside RemoveItems; prevent infinite recursion.
+    [ThreadStatic] private static bool _inCheck;
+
+    [HarmonyPostfix]
+    public static void Postfix(XUiM_PlayerInventory __instance,
+                               IList<ItemStack> _itemStacks, int _multiplier,
+                               ref bool __result)
+    {
+        if (__result || _inCheck) return;
+
+        EntityPlayer player = __instance.localPlayer;
+        if (player == null) return;
+        if (!ContainerNetworkManager.Instance.IsPlayerInOwnedLCB(player)) return;
+        if (ContainerNetworkManager.Instance.IsBloodMoonActive()) return;
+
+        var netCounts = BuildNetworkCounts(player);
+        if (netCounts == null) return;
+
+        for (int i = 0; i < _itemStacks.Count; i++)
         {
-            __result = true;
-            return false;
+            int needed   = _itemStacks[i].count * _multiplier;
+            int inPlayer = __instance.backpack.GetItemCount(_itemStacks[i].itemValue)
+                         + __instance.toolbelt.GetItemCount(_itemStacks[i].itemValue);
+            int deficit  = needed - inPlayer;
+            if (deficit <= 0) continue;
+
+            netCounts.TryGetValue(_itemStacks[i].itemValue.type, out int inNet);
+            if (inNet < deficit) return; // network cannot cover this item
         }
 
-        if (!ContainerNetworkManager.Instance.IsPlayerInOwnedLCB(_player)) return true;
-        if (ContainerNetworkManager.Instance.IsBloodMoonActive()) return true;
-
-        List<ItemStack> combined = BuildCombinedInventory(_player);
-        __result = RecipeCraftingUtils.HasRequiredMaterials(_recipe, combined, _count);
-        return false;
+        __result = true;
     }
 
-    private static List<ItemStack> BuildCombinedInventory(EntityPlayer player)
+    /// <summary>
+    /// Builds a type → total-count map from the player's network inventory.
+    /// Returns null when the network is empty or unreachable.
+    /// Sets _inCheck while running so nested HasItems calls skip our postfix.
+    /// </summary>
+    internal static Dictionary<int, int> BuildNetworkCounts(EntityPlayer player)
     {
-        var combined = new List<ItemStack>();
+        _inCheck = true;
+        try
+        {
+            var stacks = ContainerNetworkManager.Instance.GetNetworkInventory(player);
+            if (stacks.Count == 0) return null;
 
-        // Player bag + toolbar
-        if (player.bag?.items != null)
-            foreach (var s in player.bag.items)
-                if (s != null && !s.IsEmpty()) combined.Add(s.Clone());
-
-        if (player.inventory?.holdingItemItemValue != null)
-        { /* toolbar already covered by bag in 7D2D */ }
-
-        // Network
-        combined.AddRange(ContainerNetworkManager.Instance.GetNetworkInventory(player));
-        return combined;
+            var counts = new Dictionary<int, int>();
+            foreach (var s in stacks)
+            {
+                if (s == null || s.IsEmpty()) continue;
+                int t = s.itemValue.type;
+                counts[t] = counts.TryGetValue(t, out int n) ? n + s.count : s.count;
+            }
+            return counts;
+        }
+        finally { _inCheck = false; }
     }
 }
 
-// -----------------------------------------------------------------------
-// RemoveMaterials — consume from player first, then network
-// -----------------------------------------------------------------------
-[HarmonyPatch(typeof(RecipeCraftingUtils), "RemoveMaterials")]
-public static class Patch_RecipeCraftingUtils_RemoveMaterials
+// ── RemoveItems: consume network deficit after player portion is taken ─────────
+
+[HarmonyPatch(typeof(XUiM_PlayerInventory), "RemoveItems")]
+public static class Patch_XUiM_PlayerInventory_RemoveItems
 {
+    [ThreadStatic] private static ItemStack[] _deficit;
+    [ThreadStatic] private static EntityPlayer _deficitPlayer;
+
     [HarmonyPrefix]
-    public static bool Prefix(EntityPlayer _player, Recipe _recipe, int _count)
+    public static void Prefix(XUiM_PlayerInventory __instance,
+                               IList<ItemStack> _itemStacks, int _multiplier)
     {
-        if (_player == null || _recipe == null) return true;
-        if (!ContainerNetworkManager.Instance.IsPlayerInOwnedLCB(_player)) return true;
-        if (ContainerNetworkManager.Instance.IsBloodMoonActive()) return true;
+        _deficit       = null;
+        _deficitPlayer = null;
 
-        // Calculate what remains after taking from player inventory
-        ItemStack[] stillNeeded = ComputeRemainingAfterPlayer(_player, _recipe, _count);
+        EntityPlayer player = __instance.localPlayer;
+        if (player == null) return;
+        if (!ContainerNetworkManager.Instance.IsPlayerInOwnedLCB(player)) return;
+        if (ContainerNetworkManager.Instance.IsBloodMoonActive()) return;
 
-        if (stillNeeded == null) return true; // player has everything; let original handle it
+        var netCounts = Patch_XUiM_PlayerInventory_HasItems.BuildNetworkCounts(player);
+        if (netCounts == null) return;
 
-        // Pull the remainder from network containers
-        if (stillNeeded.Length > 0)
-            ContainerNetworkManager.Instance.ConsumeFromNetwork(_player, stillNeeded);
+        var deficit = new List<ItemStack>();
+        for (int i = 0; i < _itemStacks.Count; i++)
+        {
+            int needed    = _itemStacks[i].count * _multiplier;
+            int inPlayer  = __instance.backpack.GetItemCount(_itemStacks[i].itemValue)
+                          + __instance.toolbelt.GetItemCount(_itemStacks[i].itemValue);
+            int shortfall = needed - inPlayer;
+            if (shortfall <= 0) continue;
 
-        // Let the original method run to consume the player-side portion
-        return true;
+            netCounts.TryGetValue(_itemStacks[i].itemValue.type, out int inNet);
+            if (inNet < shortfall) return; // network can't cover — bail, let vanilla handle failure
+
+            deficit.Add(new ItemStack(_itemStacks[i].itemValue.Clone(), shortfall));
+        }
+
+        if (deficit.Count > 0)
+        {
+            _deficit       = deficit.ToArray();
+            _deficitPlayer = player;
+        }
     }
 
-    private static ItemStack[] ComputeRemainingAfterPlayer(EntityPlayer player, Recipe recipe, int count)
+    // Runs even when the original returns early (e.g. !HasItems) — safe because
+    // _deficit is only set when we are certain the network can cover the shortfall.
+    [HarmonyPostfix]
+    public static void Postfix()
     {
-        if (recipe.ingredients == null) return null;
-
-        var remaining = new List<ItemStack>();
-        // Build a mutable copy of required counts
-        var needed = new Dictionary<int, int>();
-        foreach (var ing in recipe.ingredients)
+        if (_deficit != null && _deficitPlayer != null)
         {
-            if (ing == null || ing.IsEmpty()) continue;
-            int type = ing.itemValue.type;
-            if (needed.ContainsKey(type))
-                needed[type] += ing.count * count;
-            else
-                needed[type] = ing.count * count;
+            ContainerNetworkManager.Instance.ConsumeFromNetwork(_deficitPlayer, _deficit);
+            _deficit       = null;
+            _deficitPlayer = null;
         }
-
-        // Subtract what the player has in their bag
-        if (player.bag?.items != null)
-        {
-            foreach (var stack in player.bag.items)
-            {
-                if (stack == null || stack.IsEmpty()) continue;
-                int type = stack.itemValue.type;
-                if (needed.ContainsKey(type) && needed[type] > 0)
-                {
-                    int use = System.Math.Min(needed[type], stack.count);
-                    needed[type] -= use;
-                }
-            }
-        }
-
-        foreach (var kvp in needed)
-        {
-            if (kvp.Value > 0)
-            {
-                remaining.Add(new ItemStack(
-                    new ItemValue(kvp.Key, false),
-                    kvp.Value));
-            }
-        }
-
-        return remaining.Count == 0 ? null : remaining.ToArray();
     }
 }
