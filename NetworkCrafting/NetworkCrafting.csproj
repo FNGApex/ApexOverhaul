@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- 7 Days to Die V2.6 EXP targets .NET Framework 4.8 -->
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>NetworkCrafting</AssemblyName>
+    <RootNamespace>NetworkCrafting</RootNamespace>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+
+    <!-- Output the DLL directly into Harmony/ so it is picked up by the mod loader -->
+    <OutputPath>Harmony/</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <!--
+    Game DLL references — set GameDir via env variable or edit the fallback below.
+
+    macOS (Steam default):
+      ~/Library/Application Support/Steam/steamapps/common/7 Days To Die
+
+    Windows (Steam default):
+      C:\Program Files (x86)\Steam\steamapps\common\7 Days To Die
+  -->
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform('OSX'))">
+    <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/7 Days To Die</GameDir>
+    <ManagedDir>$(GameDir)/7 Days To Die.app/Contents/Resources/Data/Managed</ManagedDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
+    <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\7 Days To Die</GameDir>
+    <ManagedDir>$(GameDir)\7DaysToDie_Data\Managed</ManagedDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(ManagedDir)/Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(ManagedDir)/0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(ManagedDir)/UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ManagedDir)/UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- Add additional Unity/game assemblies here if the compiler requires them -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="src/Main.cs" />
+    <Compile Include="src/ContainerNetworkManager.cs" />
+    <Compile Include="src/Patches/ContainerBroadcastPatch.cs" />
+    <Compile Include="src/Patches/RadialMenuPatch.cs" />
+    <Compile Include="src/Patches/CraftingNetworkPatch.cs" />
+    <Compile Include="src/Patches/RepairUpgradePatch.cs" />
+    <Compile Include="src/Patches/BloodMoonPatch.cs" />
+    <Compile Include="src/Patches/PlayerBuffPatch.cs" />
+  </ItemGroup>
+
+</Project>

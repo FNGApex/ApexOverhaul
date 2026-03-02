@@ -1,0 +1,10 @@
+<append xpath="/buffs">
+    <buff name="buffNetworkCraftingActive"
+          name_key="buffNetworkCraftingActiveName"
+          description_key="buffNetworkCraftingActiveDesc"
+          icon="ui_game_symbol_container"
+          icon_color="0,200,100">
+        <stack_type value="ignore"/>
+        <duration value="0"/>
+    </buff>
+</append>

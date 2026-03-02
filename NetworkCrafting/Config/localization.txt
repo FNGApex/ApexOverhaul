@@ -1,0 +1,4 @@
+Key,File,Type,UsedInMainMenu,NoTranslate,english
+buffNetworkCraftingActiveName,Localization,Buff,,,"Network Crafting Active"
+buffNetworkCraftingActiveDesc,Localization,Buff,,,"You can craft using resources from nearby broadcasting containers."
+uiToggleBroadcasting,Localization,UI,,,"Toggle Broadcasting"

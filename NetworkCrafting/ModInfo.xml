@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xml>
+    <Name value="NetworkCrafting" />
+    <DisplayName value="Network Crafting" />
+    <Description value="Craft using resources from broadcasting containers within your Land Claim." />
+    <Author value="YourName" />
+    <Version value="1.0.0" />
+    <Website value="" />
+</xml>
