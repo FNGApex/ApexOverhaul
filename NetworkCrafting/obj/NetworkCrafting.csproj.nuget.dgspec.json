@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/NetworkCrafting.csproj": {}
+  },
+  "projects": {
+    "/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/NetworkCrafting.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/NetworkCrafting.csproj",
+        "projectName": "NetworkCrafting",
+        "projectPath": "/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/NetworkCrafting.csproj",
+        "packagesPath": "/Users/bear/.nuget/packages/",
+        "outputPath": "/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/bear/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net48"
+        ],
+        "sources": {
+          "/opt/homebrew/Cellar/dotnet/10.0.103/libexec/library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net48": {
+            "targetAlias": "net48",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.100"
+      },
+      "frameworks": {
+        "net48": {
+          "targetAlias": "net48",
+          "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet/10.0.103/libexec/sdk/10.0.103/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

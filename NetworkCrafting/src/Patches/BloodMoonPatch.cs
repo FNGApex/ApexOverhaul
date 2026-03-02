@@ -1,39 +1,35 @@
 using HarmonyLib;
 
 /// <summary>
-/// Disables network crafting during blood moon (horde night).
-/// When blood moon starts: network inventory returns empty, buff is removed.
-/// When blood moon ends: buff is reapplied if player is still in LCB.
+/// Ensures the network crafting buff is removed the moment blood moon becomes
+/// active, without waiting for the PlayerBuffPatch 2-second polling cycle.
+///
+/// SkyManager.UpdateTimeOfDay() is called each frame during the day/night cycle.
+/// We hook its postfix to detect the transition from "not blood moon" to "blood moon"
+/// and immediately strip the buff from all local players.
 /// </summary>
-
-// Detect transition to blood moon active
-[HarmonyPatch(typeof(SkyManager), "BloodMoonSet")]
-public static class Patch_SkyManager_BloodMoonSet
+[HarmonyPatch(typeof(SkyManager), "UpdateTimeOfDay")]
+public static class Patch_SkyManager_UpdateTimeOfDay
 {
+    private static bool wasBloodMoon = false;
+
     [HarmonyPostfix]
-    public static void Postfix(bool value)
+    public static void Postfix()
     {
         if (GameManager.Instance?.World == null) return;
 
-        foreach (var player in GameManager.Instance.World.Players.list)
-        {
-            if (player == null) continue;
+        bool isNow = SkyManager.IsBloodMoonVisible();
 
-            if (value)
+        // Transition: normal → blood moon
+        if (isNow && !wasBloodMoon)
+        {
+            foreach (var player in GameManager.Instance.World.Players.list)
             {
-                // Blood moon starting — remove the buff
-                if (player.Buffs.HasBuff("buffNetworkCraftingActive"))
+                if (player != null && player.Buffs.HasBuff("buffNetworkCraftingActive"))
                     player.Buffs.RemoveBuff("buffNetworkCraftingActive");
             }
-            else
-            {
-                // Blood moon ending — reapply buff if still in LCB
-                if (ContainerNetworkManager.Instance.IsPlayerInOwnedLCB(player))
-                {
-                    if (!player.Buffs.HasBuff("buffNetworkCraftingActive"))
-                        player.Buffs.AddBuff("buffNetworkCraftingActive");
-                }
-            }
         }
+
+        wasBloodMoon = isNow;
     }
 }

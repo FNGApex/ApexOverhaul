@@ -194,15 +194,18 @@ public class ContainerNetworkManager
 
     /// <summary>
     /// Returns true when the player is inside an LCB they have edit rights to,
-    /// and outputs the LCB's claim centre position.
+    /// and outputs the LCB block position.
+    ///
+    /// Uses m_lpBlockMap (Vector3i → PersistentPlayerData) for a single flat pass:
+    /// position check first, permission check only when the player is in range.
     /// </summary>
     public bool IsPlayerInOwnedLCB(EntityPlayer player, out Vector3i lcbPos)
     {
         lcbPos = Vector3i.zero;
         if (player == null) return false;
 
-        World world = GameManager.Instance.World;
         PersistentPlayerList playerList = GameManager.Instance.GetPersistentPlayerList();
+        if (playerList == null) return false;
 
         Vector3i playerBlockPos = new Vector3i(
             Mathf.FloorToInt(player.position.x),
@@ -211,27 +214,25 @@ public class ContainerNetworkManager
 
         int lcbRadius = GamePrefs.GetInt(EnumGamePrefs.LandClaimSize) / 2;
 
-        // Iterate all player data entries to find claims the player can edit
-        foreach (var kvp in playerList.Players)
+        foreach (var kvp in playerList.m_lpBlockMap)
         {
+            Vector3i claimPos = kvp.Key;
+
+            // Fast spatial check first — skip if not in range
+            if (Mathf.Abs(playerBlockPos.x - claimPos.x) > lcbRadius ||
+                Mathf.Abs(playerBlockPos.z - claimPos.z) > lcbRadius)
+                continue;
+
+            // Player is in range — now check edit permission
             PersistentPlayerData data = kvp.Value;
             if (data == null) continue;
 
-            // Check if the player has edit permission on this land claim set
-            bool canEdit = data.PrimaryId.Equals(player.PlatformId);
-            if (!canEdit && data.ACL != null)
-                canEdit = data.ACL.Contains(player.PlatformId);
+            bool canEdit = data.PrimaryId.Equals(player.PlatformId) ||
+                           (data.ACL != null && data.ACL.Contains(player.PlatformId));
             if (!canEdit) continue;
 
-            foreach (var claimPos in data.GetLandProtected())
-            {
-                if (Mathf.Abs(playerBlockPos.x - claimPos.x) <= lcbRadius &&
-                    Mathf.Abs(playerBlockPos.z - claimPos.z) <= lcbRadius)
-                {
-                    lcbPos = claimPos;
-                    return true;
-                }
-            }
+            lcbPos = claimPos;
+            return true;
         }
 
         return false;
@@ -248,7 +249,7 @@ public class ContainerNetworkManager
     public bool IsBloodMoonActive()
     {
         if (GameManager.Instance?.World == null) return false;
-        return SkyManager.BloodMoonActive;
+        return SkyManager.IsBloodMoonVisible();
     }
 
     // -----------------------------------------------------------------------
@@ -263,18 +264,13 @@ public class ContainerNetworkManager
 
         int lcbRadius = GamePrefs.GetInt(EnumGamePrefs.LandClaimSize) / 2;
 
-        foreach (var kvp in playerList.Players)
+        foreach (var claimPos in playerList.m_lpBlockMap.Keys)
         {
-            PersistentPlayerData data = kvp.Value;
-            if (data == null) continue;
-            foreach (var claimPos in data.GetLandProtected())
+            if (Mathf.Abs(worldPos.x - claimPos.x) <= lcbRadius &&
+                Mathf.Abs(worldPos.z - claimPos.z) <= lcbRadius)
             {
-                if (Mathf.Abs(worldPos.x - claimPos.x) <= lcbRadius &&
-                    Mathf.Abs(worldPos.z - claimPos.z) <= lcbRadius)
-                {
-                    lcbPos = claimPos;
-                    return true;
-                }
+                lcbPos = claimPos;
+                return true;
             }
         }
 

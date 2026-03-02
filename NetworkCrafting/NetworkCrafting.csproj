@@ -7,7 +7,12 @@
     <RootNamespace>NetworkCrafting</RootNamespace>
     <Nullable>disable</Nullable>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
+
+    <!-- Default to Release; override with: dotnet build -c Debug -->
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <Optimize Condition="'$(Configuration)' == 'Release'">true</Optimize>
+    <DebugSymbols Condition="'$(Configuration)' == 'Debug'">true</DebugSymbols>
+    <DebugType Condition="'$(Configuration)' == 'Debug'">full</DebugType>
 
     <!-- Output the DLL directly into Harmony/ so it is picked up by the mod loader -->
     <OutputPath>Harmony/</OutputPath>
@@ -26,12 +31,15 @@
   -->
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform('OSX'))">
     <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/7 Days To Die</GameDir>
-    <ManagedDir>$(GameDir)/7 Days To Die.app/Contents/Resources/Data/Managed</ManagedDir>
+    <ManagedDir>$(GameDir)/7DaysToDie.app/Contents/Resources/Data/Managed</ManagedDir>
+    <!-- On macOS, TFP ships Harmony as a mod rather than in Managed/ -->
+    <HarmonyDir>$(GameDir)/Mods/0_TFP_Harmony</HarmonyDir>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
     <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\7 Days To Die</GameDir>
     <ManagedDir>$(GameDir)\7DaysToDie_Data\Managed</ManagedDir>
+    <HarmonyDir>$(ManagedDir)</HarmonyDir>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,7 +48,7 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>$(ManagedDir)/0Harmony.dll</HintPath>
+      <HintPath>$(HarmonyDir)/0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
@@ -54,15 +62,5 @@
     <!-- Add additional Unity/game assemblies here if the compiler requires them -->
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="src/Main.cs" />
-    <Compile Include="src/ContainerNetworkManager.cs" />
-    <Compile Include="src/Patches/ContainerBroadcastPatch.cs" />
-    <Compile Include="src/Patches/RadialMenuPatch.cs" />
-    <Compile Include="src/Patches/CraftingNetworkPatch.cs" />
-    <Compile Include="src/Patches/RepairUpgradePatch.cs" />
-    <Compile Include="src/Patches/BloodMoonPatch.cs" />
-    <Compile Include="src/Patches/PlayerBuffPatch.cs" />
-  </ItemGroup>
 
 </Project>
