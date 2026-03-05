@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+vu2TAYX4Ok=",
+  "dgSpecHash": "KCY036impWU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\drgor\\Documents\\GitHub\\ApexOverhaul\\NetworkCrafting\\NetworkCrafting.csproj",
+  "projectFilePath": "C:\\Users\\drgor\\Documents\\GitHub\\ApexOverhaul\\QuestTweaks\\QuestTweaks.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\drgor\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
     "C:\\Users\\drgor\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net48\\1.0.3\\microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512",

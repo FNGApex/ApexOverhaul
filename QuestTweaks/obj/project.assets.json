@@ -622,11 +622,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\drgor\\Documents\\GitHub\\ApexOverhaul\\NetworkCrafting\\NetworkCrafting.csproj",
-      "projectName": "NetworkCrafting",
-      "projectPath": "C:\\Users\\drgor\\Documents\\GitHub\\ApexOverhaul\\NetworkCrafting\\NetworkCrafting.csproj",
+      "projectUniqueName": "C:\\Users\\drgor\\Documents\\GitHub\\ApexOverhaul\\QuestTweaks\\QuestTweaks.csproj",
+      "projectName": "QuestTweaks",
+      "projectPath": "C:\\Users\\drgor\\Documents\\GitHub\\ApexOverhaul\\QuestTweaks\\QuestTweaks.csproj",
       "packagesPath": "C:\\Users\\drgor\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\drgor\\Documents\\GitHub\\ApexOverhaul\\NetworkCrafting\\obj\\",
+      "outputPath": "C:\\Users\\drgor\\Documents\\GitHub\\ApexOverhaul\\QuestTweaks\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\drgor\\AppData\\Roaming\\NuGet\\NuGet.Config"

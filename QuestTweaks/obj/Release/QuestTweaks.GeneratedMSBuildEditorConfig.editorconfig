@@ -1,6 +1,6 @@
 is_global = true
-build_property.RootNamespace = NetworkCrafting
-build_property.ProjectDir = C:\Users\drgor\Documents\GitHub\ApexOverhaul\NetworkCrafting\
+build_property.RootNamespace = QuestTweaks
+build_property.ProjectDir = C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.CsWinRTUseWindowsUIXamlProjections = false

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml>
+    <Name value="QuestTweaks" />
+    <DisplayName value="Quest Tweaks - No POI Cooldowns" />
+    <Description value="Removes all POI quest cooldown timers so every POI is immediately available for questing again." />
+    <Author value="ApexOverhaul" />
+    <Version value="1.0.0" />
+</xml>

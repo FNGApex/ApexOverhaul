@@ -1,0 +1,12 @@
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\obj\Release\QuestTweaks.csproj.AssemblyReference.cache
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\obj\Release\QuestTweaks.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\obj\Release\QuestTweaks.AssemblyInfoInputs.cache
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\obj\Release\QuestTweaks.AssemblyInfo.cs
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\obj\Release\QuestTweaks.csproj.CoreCompileInputs.cache
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\obj\Release\QuestTweaks.sourcelink.json
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\Harmony\QuestTweaks.dll
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\Harmony\QuestTweaks.pdb
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\obj\Release\QuestTweaks.dll
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\obj\Release\QuestTweaks.pdb
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\bin\QuestTweaks.dll
+C:\Users\drgor\Documents\GitHub\ApexOverhaul\QuestTweaks\bin\QuestTweaks.pdb
