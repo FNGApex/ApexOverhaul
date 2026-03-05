@@ -1,26 +1,21 @@
 using HarmonyLib;
-using System;
+using System.Reflection;
+using UnityEngine;
 
 public class NetworkCraftingMod : IModApi
 {
-    private static Harmony harmonyInstance;
-
     public void InitMod(Mod _modInstance)
     {
-        harmonyInstance = new Harmony("com.networkcrafting.mod");
-        harmonyInstance.PatchAll();
-
-        ModEvents.GameStartDone.RegisterHandler(OnGameStartDone);
-        ModEvents.GameShutdown.RegisterHandler(OnGameShutdown);
-    }
-
-    private static void OnGameStartDone(ref ModEvents.SGameStartDoneData _data)
-    {
-        ContainerNetworkManager.Instance.OnGameStarted();
-    }
-
-    private static void OnGameShutdown(ref ModEvents.SGameShutdownData _data)
-    {
-        ContainerNetworkManager.Instance.OnGameShutdown();
+        Debug.Log("[NetworkCrafting] InitMod called");
+        try
+        {
+            var harmony = new Harmony("com.networkcrafting.mod");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            Debug.Log("[NetworkCrafting] PatchAll completed successfully");
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log($"[NetworkCrafting] PatchAll FAILED: {ex}");
+        }
     }
 }

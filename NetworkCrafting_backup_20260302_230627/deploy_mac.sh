@@ -20,11 +20,11 @@ echo "==> Building $MOD_NAME ($CONFIG)…"
 dotnet build "$SCRIPT_DIR/$MOD_NAME.csproj" -c "$CONFIG" --nologo -v minimal
 
 echo "==> Installing to: $DEST"
-mkdir -p "$DEST"
+mkdir -p "$DEST/Harmony"
 mkdir -p "$DEST/Config"
 
-# DLL goes in mod root — game loader scans the folder directly
-cp "$SCRIPT_DIR/bin/$MOD_NAME.dll" "$DEST/$MOD_NAME.dll"
+# DLL
+cp "$SCRIPT_DIR/Harmony/$MOD_NAME.dll" "$DEST/Harmony/$MOD_NAME.dll"
 
 # Mod manifest
 cp "$SCRIPT_DIR/ModInfo.xml" "$DEST/ModInfo.xml"
@@ -34,4 +34,4 @@ cp "$SCRIPT_DIR/Config/"* "$DEST/Config/"
 
 echo "==> Done."
 echo "    Installed: $DEST"
-echo "    DLL size:  $(du -sh "$DEST/$MOD_NAME.dll" | cut -f1)"
+echo "    DLL size:  $(du -sh "$DEST/Harmony/$MOD_NAME.dll" | cut -f1)"

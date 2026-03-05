@@ -16,7 +16,8 @@
     <DebugSymbols Condition="'$(Configuration)' == 'Debug'">true</DebugSymbols>
     <DebugType Condition="'$(Configuration)' == 'Debug'">full</DebugType>
 
-    <OutputPath>bin/</OutputPath>
+    <!-- Output the DLL directly into Harmony/ so it is picked up by the mod loader -->
+    <OutputPath>Harmony/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>

@@ -8,5 +8,3 @@
 /Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/Harmony/NetworkCrafting.pdb
 /Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Release/NetworkCrafting.dll
 /Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/obj/Release/NetworkCrafting.pdb
-/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/bin/NetworkCrafting.dll
-/Users/bear/Documents/Github/ApexOverhaul/NetworkCrafting/bin/NetworkCrafting.pdb
