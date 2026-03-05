@@ -17,11 +17,24 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <GameDir Condition="'$(GameDir)' == ''">D:\SteamLibrary\steamapps\common\7 Days To Die</GameDir>
+  <!--
+    Game DLL references — set GameDir via env variable or edit the fallback below.
+
+    macOS (Steam default):
+      ~/Library/Application Support/Steam/steamapps/common/7 Days To Die
+    Windows (Steam default):
+      C:\Program Files (x86)\Steam\steamapps\common\7 Days To Die
+  -->
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform('OSX'))">
+    <GameDir Condition="'$(GameDir)' == ''">$(HOME)/Library/Application Support/Steam/steamapps/common/7 Days To Die</GameDir>
+    <ManagedDir>$(GameDir)/7DaysToDie.app/Contents/Resources/Data/Managed</ManagedDir>
+    <HarmonyDir>$(GameDir)/Mods/0_TFP_Harmony</HarmonyDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">
+    <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\7 Days To Die</GameDir>
     <ManagedDir>$(GameDir)\7DaysToDie_Data\Managed</ManagedDir>
     <HarmonyDir>$(GameDir)\Mods\0_TFP_Harmony</HarmonyDir>
-    <ModsDir>$(GameDir)\Mods</ModsDir>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,23 +44,23 @@
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>$(ManagedDir)\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(ManagedDir)/Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>$(HarmonyDir)\0Harmony.dll</HintPath>
+      <HintPath>$(HarmonyDir)/0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>$(ManagedDir)\UnityEngine.dll</HintPath>
+      <HintPath>$(ManagedDir)/UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(ManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(ManagedDir)/UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="LogLibrary">
-      <HintPath>$(ManagedDir)\LogLibrary.dll</HintPath>
+      <HintPath>$(ManagedDir)/LogLibrary.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

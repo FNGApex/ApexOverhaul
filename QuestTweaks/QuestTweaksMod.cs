@@ -7,6 +7,6 @@ public class QuestTweaksMod : IModApi
     {
         var harmony = new Harmony("com.apexoverhaul.questtweaks");
         harmony.PatchAll(Assembly.GetExecutingAssembly());
-        Log.Out("[QuestTweaks] Harmony patches applied — all POI quest cooldowns removed.");
+        Log.Out("[QuestTweaks] Harmony patches applied all POI quest cooldowns removed.");
     }
 }

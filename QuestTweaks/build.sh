@@ -1,11 +1,18 @@
-#!/bin/bash
-# Build QuestTweaks mod
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR"
+# ---------------------------------------------------------------------------
+# build.sh — Build QuestTweaks (compile only, no deploy)
+# Usage:
+#   ./build.sh           # Release build (default)
+#   ./build.sh debug     # Debug build
+# ---------------------------------------------------------------------------
 
-echo "[QuestTweaks] Building..."
-dotnet build -c Release
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MOD_NAME="QuestTweaks"
+CONFIG="${1:-Release}"
 
-echo "[QuestTweaks] Build complete. DLL at: bin/QuestTweaks.dll"
+echo "==> Building $MOD_NAME ($CONFIG)…"
+dotnet build "$SCRIPT_DIR/$MOD_NAME.csproj" -c "$CONFIG" --nologo -v minimal
+
+echo "==> Done. DLL at: $SCRIPT_DIR/bin/$MOD_NAME.dll"
