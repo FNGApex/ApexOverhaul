@@ -7,8 +7,11 @@ The `decompiled/` directory contains the full decompiled source of the game's C#
 - `decompiled/Assembly-CSharp/` — Main game code (3,991 .cs files). All gameplay logic lives here.
 - `decompiled/Assembly-CSharp-firstpass/` — Utility/third-party libs (InControl, FullSerializer, etc.). No game logic.
 
-Source DLL: `D:\SteamLibrary\steamapps\common\7 Days To Die\7DaysToDie_Data\Managed\Assembly-CSharp.dll`
-Decompiled with: `ilspycmd` v9.1.0
+Source DLLs:
+- macOS: `~/Library/Application Support/Steam/steamapps/common/7 Days To Die/7DaysToDie.app/Contents/Resources/Data/Managed/`
+- Windows: `D:\SteamLibrary\steamapps\common\7 Days To Die\7DaysToDie_Data\Managed\`
+
+Decompiled with: `ilspycmd` v9.1.0 (requires `DOTNET_ROLL_FORWARD=LatestMajor` on .NET 10+)
 
 ## Key Files for Quest/POI Cooldown Work
 
