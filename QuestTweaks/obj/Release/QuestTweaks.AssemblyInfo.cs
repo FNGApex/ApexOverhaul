@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuestTweaks")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+69859c2116e71767e5c267757d03828ce7996c1c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2f71cfd09d3777c5fa7c7efe51472706a991ac10")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuestTweaks")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuestTweaks")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
